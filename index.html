@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox - Imagina, Crea, Comparte</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Cursor personalizado */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #4ecdc4;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.1s ease;
+            box-shadow: 0 0 20px #4ecdc4;
+        }
+
+        .cursor-trail {
+            width: 10px;
+            height: 10px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.6;
+        }
+
+        /* Fondo épico con múltiples capas */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at top, #1a0033 0%, #000000 50%, #000511 100%);
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, #4ecdc4 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 15s infinite;
+            filter: blur(2px);
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.4;
+            }
+            25% {
+                transform: translateY(-150px) translateX(100px) scale(1.5);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateY(-100px) translateX(-50px) scale(1.2);
+                opacity: 0.6;
+            }
+            75% {
+                transform: translateY(-200px) translateX(150px) scale(1.8);
+                opacity: 0.9;
+            }
+        }
+
+        /* Rayo de luz atravesando */
+        .light-beam {
+            position: fixed;
+            width: 2px;
+            height: 100vh;
+            background: linear-gradient(180deg, transparent, #4ecdc4, transparent);
+            animation: sweep 8s infinite;
+            box-shadow: 0 0 40px #4ecdc4;
+            z-index: -1;
+        }
+
+        @keyframes sweep {
+            0% { left: -10%; opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { left: 110%; opacity: 0; }
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(78, 205, 196, 0.3);
+            transition: all 0.3s;
+            box-shadow: 0 10px 50px rgba(78, 205, 196, 0.1);
+        }
+
+        header.scrolled {
+            padding: 12px 0;
+            background: rgba(0, 0, 0, 0.9);
+            box-shadow: 0 10px 50px rgba(78, 205, 196, 0.3);
+        }
+
+        nav {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 60px;
+        }
+
+        .logo {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #ff0080);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientFlow 4s ease infinite, logoGlow 2s ease-in-out infinite;
+            letter-spacing: 3px;
+            text-shadow: 0 0 30px rgba(78, 205, 196, 0.5);
+            position: relative;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { filter: drop-shadow(0 0 10px #4ecdc4); }
+            50% { filter: drop-shadow(0 0 30px #ff0080); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 50px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s;
+            position: relative;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff0080, #4ecdc4);
+            opacity: 0;
+            z-index: -1;
+            border-radius: 10px;
+            transition: all 0.3s;
+            filter: blur(10px);
+        }
+
+        .nav-links a:hover::before {
+            opacity: 0.5;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4ecdc4, #ff0080);
+            transition: width 0.3s;
+            box-shadow: 0 0 10px #4ecdc4;
+        }
+
+        .nav-links a:hover::after {
+            width: 80%;
+        }
+
+        .nav-links a:hover {
+            color: #4ecdc4;
+            transform: translateY(-3px);
+        }
+
+        .hero {
+            margin-top: 80px;
+            padding: 180px 60px 120px;
+            text-align: center;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+
+        /* Círculos giratorios detrás del título */
+        .hero::before,
+        .hero::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            animation: rotate 20s linear infinite;
+        }
+
+        .hero::before {
+            width: 600px;
+            height: 600px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 100px rgba(78, 205, 196, 0.2);
+        }
+
+        .hero::after {
+            width: 800px;
+            height: 800px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-direction: reverse;
+            animation-duration: 25s;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .hero h1 {
+            font-size: 96px;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #fff, #4ecdc4, #ff0080, #fff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease, gradientFlow 5s ease infinite, textGlow 3s ease-in-out infinite;
+            font-weight: 900;
+            letter-spacing: -3px;
+            position: relative;
+            z-index: 10;
+            text-transform: uppercase;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 20px rgba(78, 205, 196, 0.8))
+                        drop-shadow(0 0 40px rgba(78, 205, 196, 0.4)); 
+            }
+            50% { 
+                filter: drop-shadow(0 0 30px rgba(255, 0, 128, 0.8))
+                        drop-shadow(0 0 60px rgba(255, 0, 128, 0.4)); 
+            }
+        }
+
+        .hero p {
+            font-size: 26px;
+            margin-bottom: 60px;
+            opacity: 0.95;
+            animation: fadeInUp 1s ease 0.3s;
+            animation-fill-mode: both;
+            line-height: 1.8;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 10;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            animation: fadeInUp 1s ease 0.6s;
+            animation-fill-mode: both;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 22px 60px;
+            background: linear-gradient(135deg, #ff0080, #ff8c00, #40e0d0);
+            background-size: 200% 200%;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 900;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 50px rgba(255, 0, 128, 0.5),
+                        inset 0 -5px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: buttonGlow 3s ease infinite;
+        }
+
+        @keyframes buttonGlow {
+            0%, 100% { 
+                box-shadow: 0 15px 50px rgba(255, 0, 128, 0.5),
+                            0 0 30px rgba(78, 205, 196, 0.3),
+                            inset 0 -5px 20px rgba(0, 0, 0, 0.3);
+            }
+            50% { 
+                box-shadow: 0 15px 50px rgba(78, 205, 196, 0.7),
+                            0 0 60px rgba(255, 0, 128, 0.5),
+                            inset 0 -5px 20px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.5), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 25px 70px rgba(255, 0, 128, 0.8),
+                        0 0 80px rgba(78, 205, 196, 0.6),
+                        inset 0 -5px 20px rgba(0, 0, 0, 0.3);
+            background-position: 100% 0;
+        }
+
+        .cta-button.secondary {
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid #4ecdc4;
+            box-shadow: 0 15px 50px rgba(78, 205, 196, 0.4),
+                        inset 0 0 30px rgba(78, 205, 196, 0.1);
+        }
+
+        .cta-button.secondary:hover {
+            background: rgba(78, 205, 196, 0.2);
+            box-shadow: 0 25px 70px rgba(78, 205, 196, 0.8),
+                        inset 0 0 50px rgba(78, 205, 196, 0.3);
+            border-color: #ff0080;
+        }
+
+        .features {
+            max-width: 1600px;
+            margin: 150px auto;
+            padding: 0 60px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 50px;
+            position: relative;
+        }
+
+        .feature-card {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 60px;
+            border-radius: 40px;
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                        inset 0 0 50px rgba(78, 205, 196, 0.05);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(78, 205, 196, 0.2) 0%, transparent 70%);
+            transition: all 0.8s;
+            opacity: 0;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: all 0.6s;
+        }
+
+        .feature-card:hover::after {
+            left: 100%;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+            top: -50%;
+            left: -50%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-20px) scale(1.05);
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 40px 100px rgba(78, 205, 196, 0.5),
+                        0 0 80px rgba(255, 0, 128, 0.3),
+                        inset 0 0 80px rgba(78, 205, 196, 0.1);
+            border-color: #4ecdc4;
+        }
+
+        .feature-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            display: inline-block;
+            animation: iconFloat 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(78, 205, 196, 0.8));
+            transition: all 0.5s;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .feature-card:hover .feature-icon {
+            animation: iconSpin 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: drop-shadow(0 0 50px rgba(255, 0, 128, 1));
+        }
+
+        @keyframes iconSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.4); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .feature-card h3 {
+            font-size: 32px;
+            margin-bottom: 25px;
+            background: linear-gradient(45deg, #4ecdc4, #ff0080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .feature-card p {
+            opacity: 0.9;
+            line-height: 2;
+            font-size: 17px;
+        }
+
+        .stats {
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.15), rgba(78, 205, 196, 0.15));
+            padding: 120px 60px;
+            text-align: center;
+            position: relative;
+            border-top: 2px solid rgba(78, 205, 196, 0.3);
+            border-bottom: 2px solid rgba(78, 205, 196, 0.3);
+            box-shadow: inset 0 0 100px rgba(78, 205, 196, 0.1);
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="2" height="2" fill="%234ecdc4" opacity="0.3"/></svg>');
+            opacity: 0.1;
+        }
+
+        .stats-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 80px;
+            position: relative;
+        }
+
+        .stat-item {
+            position: relative;
+            padding: 50px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 30px;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            transition: all 0.5s;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(78, 205, 196, 0.2) 0%, transparent 70%);
+            animation: statPulse 4s infinite;
+        }
+
+        @keyframes statPulse {
+            0%, 100% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1); opacity: 1; }
+        }
+
+        .stat-item:hover {
+            transform: scale(1.15) rotate(2deg);
+            box-shadow: 0 30px 80px rgba(78, 205, 196, 0.6),
+                        0 0 100px rgba(255, 0, 128, 0.4);
+            border-color: #4ecdc4;
+        }
+
+        .stat-item h2 {
+            font-size: 72px;
+            background: linear-gradient(45deg, #4ecdc4, #ff0080, #4ecdc4);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-weight: 900;
+            animation: countUp 2s ease, gradientFlow 3s ease infinite;
+            filter: drop-shadow(0 0 20px rgba(78, 205, 196, 0.8));
+            position: relative;
+        }
+
+        @keyframes countUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.5);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .stat-item p {
+            font-size: 20px;
+            opacity: 0.95;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .gallery {
+            max-width: 1600px;
+            margin: 150px auto;
+            padding: 0 60px;
+        }
+
+        .gallery h2 {
+            text-align: center;
+            font-size: 64px;
+            margin-bottom: 80px;
+            background: linear-gradient(45deg, #fff, #4ecdc4, #ff0080, #fff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientFlow 5s ease infinite;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            filter: drop-shadow(0 0 30px rgba(78, 205, 196, 0.6));
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .gallery-item {
+            height: 300px;
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.4), rgba(78, 205, 196, 0.4));
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: all 0.6s;
+        }
+
+        .gallery-item:hover::before {
+            left: 100%;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.1) rotate(2deg);
+            box-shadow: 0 40px 100px rgba(78, 205, 196, 0.7),
+                        0 0 80px rgba(255, 0, 128, 0.5);
+            border-color: #4ecdc4;
+        }
+
+        .gallery-item::after {
+            content: '🎮';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 100px;
+            opacity: 0.4;
+            filter: drop-shadow(0 0 30px rgba(78, 205, 196, 0.8));
+            transition: all 0.5s;
+        }
+
+        .gallery-item:hover::after {
+            font-size: 120px;
+            opacity: 0.8;
+            animation: iconSpin 0.6s ease;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 80px 60px;
+            text-align: center;
+            margin-top: 150px;
+            border-top: 2px solid rgba(78, 205, 196, 0.3);
+            position: relative;
+            box-shadow: 0 -20px 60px rgba(78, 205, 196, 0.2);
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4ecdc4, #ff0080, #4ecdc4, transparent);
+            animation: lineFlow 3s ease infinite;
+        }
+
+        @keyframes lineFlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        footer p {
+            opacity: 0.9;
+            font-size: 18px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Efecto de matriz en el fondo */
+        .matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+
+            .nav-links {
+                gap: 20px;
+                font-size: 12px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                padding: 0 20px;
+            }
+
+            nav {
+                padding: 0 20px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                cursor: auto;
+            }
+
+            .custom-cursor, .cursor-trail {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    <div class="bg-animation" id="bgAnimation"></div>
+    <div class="stars" id="stars"></div>
+    <div class="light-beam"></div>
+    <canvas class="matrix" id="matrix"></canvas>
+
+    <header id="header">
+        <nav>
+            <div class="logo">ROBLOX</div>
+            <ul class="nav-links">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#juegos">Juegos</a></li>
+                <li><a href="#crear">Crear</a></li>
+                <li><a href="#comunidad">Comunidad</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="inicio">
+        <h1>Bienvenido a Roblox</h1>
+        <p>La plataforma definitiva donde la imaginación cobra vida. Crea, juega y comparte experiencias únicas con millones de jugadores alrededor del mundo.</p>
+        <div class="cta-buttons">
+            <a href="#" class="cta-button">Comenzar Ahora</a>
+            <a href="#" class="cta-button secondary">Ver Juegos</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <div class="feature-icon">🎮</div>
+            <h3>Millones de Juegos</h3>
+            <p>Explora un universo infinito de experiencias creadas por desarrolladores de todo el mundo. Desde aventuras épicas hasta simuladores únicos que desafían tu imaginación.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🛠️</div>
+            <h3>Crea Tu Propio Mundo</h3>
+            <p>Con Roblox Studio, puedes dar vida a tus ideas más creativas. Herramientas potentes y accesibles para crear juegos sin límites y monetizar tu talento.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <h3>Comunidad Global</h3>
+            <p>Conecta con millones de jugadores y creadores apasionados. Haz amigos, colabora en proyectos increíbles y comparte tus creaciones con el mundo.</p>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-container">
+        </div>
+    </section>
+</body>
+</html>
